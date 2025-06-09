@@ -314,3 +314,5 @@ const EquipmentList: React.FC = () => {
 };
 
 export default EquipmentList; 
+ 
+ 

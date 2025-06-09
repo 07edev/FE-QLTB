@@ -69,7 +69,6 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
-
 /* Ant Design overrides */
 .ant-btn-primary {
   background-color: #1890ff !important;
@@ -198,3 +197,4 @@ button:focus-visible {
     padding: 16px;
   }
 }
+

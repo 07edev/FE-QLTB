@@ -585,3 +585,5 @@ const EquipmentManagement: React.FC = () => {
 };
 
 export default EquipmentManagement; 
+ 
+ 

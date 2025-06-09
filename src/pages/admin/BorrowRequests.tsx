@@ -40,7 +40,7 @@ interface BorrowRequest {
     };
     quantity: number;
   }>;
-  status: 'pending' | 'approved' | 'rejected' | 'returned';
+  status: 'pending' | 'approved' | 'rejected' | 'borrowed' | 'returned';
   borrowDate: string;
   expectedReturnDate: string;
   actualReturnDate?: string;
@@ -113,10 +113,14 @@ const BorrowRequests: React.FC = () => {
       switch (newStatus) {
         case 'approved':
           endpoint = `/api/requests/${requestId}/approve`;
+          data = { notes: reason };
           break;
         case 'rejected':
           endpoint = `/api/requests/${requestId}/reject`;
           data = { reason };
+          break;
+        case 'borrowed':
+          endpoint = `/api/requests/${requestId}/borrow`;
           break;
         case 'returned':
           endpoint = `/api/requests/${requestId}/return`;
@@ -127,7 +131,7 @@ const BorrowRequests: React.FC = () => {
 
       const response = await axiosClient.put(endpoint, data);
 
-      if (response.data?.success) {
+      if (response.data?.status === 'success') {
         message.success('Cập nhật trạng thái thành công');
         await fetchRequests(); // Refresh data
         if (newStatus === 'rejected') {
@@ -199,19 +203,23 @@ const BorrowRequests: React.FC = () => {
 
         switch (status) {
           case 'pending':
-            color = 'gold';
+            color = 'processing';
             text = 'Chờ duyệt';
             break;
           case 'approved':
-            color = 'cyan';
+            color = 'warning';
             text = 'Đã duyệt';
             break;
+          case 'borrowed':
+            color = 'success';
+            text = 'Đang mượn';
+            break;
           case 'rejected':
-            color = 'red';
+            color = 'error';
             text = 'Từ chối';
             break;
           case 'returned':
-            color = 'green';
+            color = 'default';
             text = 'Đã trả';
             break;
         }
@@ -224,39 +232,82 @@ const BorrowRequests: React.FC = () => {
       key: 'action',
       render: (_, record) => (
         <Space size="middle">
+          <Tooltip title="Xem chi tiết">
+            <Button
+              type="text"
+              icon={<EyeOutlined />}
+              onClick={() => showDetailModal(record)}
+            />
+          </Tooltip>
+          
           {record.status === 'pending' && (
             <>
-              <Button 
-                type="primary" 
-                icon={<CheckOutlined />}
-                onClick={() => handleStatusChange(record._id, 'approved')}
-              >
-                Duyệt
-              </Button>
-              <Button 
-                danger 
-                icon={<CloseOutlined />}
-                onClick={() => showRejectModal(record)}
-              >
-                Từ chối
-              </Button>
+              <Tooltip title="Duyệt yêu cầu">
+                <Button
+                  type="text"
+                  icon={<CheckOutlined style={{ color: '#52c41a' }} />}
+                  onClick={() => {
+                    confirm({
+                      title: 'Xác nhận duyệt yêu cầu mượn?',
+                      icon: <ExclamationCircleOutlined />,
+                      content: 'Bạn có chắc chắn muốn duyệt yêu cầu mượn này?',
+                      onOk() {
+                        handleStatusChange(record._id, 'approved');
+                      }
+                    });
+                  }}
+                />
+              </Tooltip>
+              
+              <Tooltip title="Từ chối yêu cầu">
+                <Button
+                  type="text"
+                  icon={<CloseOutlined style={{ color: '#ff4d4f' }} />}
+                  onClick={() => showRejectModal(record)}
+                />
+              </Tooltip>
             </>
           )}
+
           {record.status === 'approved' && (
-            <Button 
-              onClick={() => handleStatusChange(record._id, 'returned')}
-              icon={<CheckOutlined />}
-            >
-              Đánh dấu đã trả
-            </Button>
+            <Tooltip title="Xác nhận cho mượn">
+              <Button
+                type="primary"
+                onClick={() => {
+                  confirm({
+                    title: 'Xác nhận cho mượn thiết bị?',
+                    icon: <ExclamationCircleOutlined />,
+                    content: 'Bạn có chắc chắn muốn cho mượn thiết bị này?',
+                    onOk() {
+                      handleStatusChange(record._id, 'borrowed');
+                    }
+                  });
+                }}
+              >
+                Cho mượn
+              </Button>
+            </Tooltip>
           )}
-          <Button 
-            type="link" 
-            onClick={() => showDetailModal(record)}
-            icon={<EyeOutlined />}
-          >
-            Chi tiết
-          </Button>
+
+          {record.status === 'borrowed' && (
+            <Tooltip title="Xác nhận trả thiết bị">
+              <Button
+                type="primary"
+                onClick={() => {
+                  confirm({
+                    title: 'Xác nhận trả thiết bị?',
+                    icon: <ExclamationCircleOutlined />,
+                    content: 'Bạn có chắc chắn muốn xác nhận trả thiết bị này?',
+                    onOk() {
+                      handleStatusChange(record._id, 'returned');
+                    }
+                  });
+                }}
+              >
+                Xác nhận trả
+              </Button>
+            </Tooltip>
+          )}
         </Space>
       ),
     },
@@ -372,3 +423,4 @@ const BorrowRequests: React.FC = () => {
 };
 
 export default BorrowRequests; 
+ 

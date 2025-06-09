@@ -22,16 +22,24 @@ interface RegisterForm {
 }
 
 interface RegisterResponse {
-  status: string;
-  data: {
+  success: boolean;
+  message: string;
+  data?: {
     user: {
       _id: string;
       fullName: string;
       email: string;
-      role: string;
+      role: 'admin' | 'student';
+      studentId?: string;
+      phone?: string;
+      faculty?: string;
+      class?: string;
+      isActive: boolean;
+      createdAt: string;
+      updatedAt: string;
     };
     token: string;
-  }
+  };
 }
 
 const Register = () => {
@@ -64,7 +72,7 @@ const Register = () => {
       
       console.log('Register response:', response.data);
       
-      if (response.data?.status === 'success' && response.data.data?.user && response.data.data?.token) {
+      if (response.data?.success && response.data.data?.user && response.data.data?.token) {
         message.success('Đăng ký thành công!');
         dispatch(setCredentials({
           user: response.data.data.user,
@@ -152,6 +160,7 @@ const Register = () => {
             label="Mã sinh viên"
             rules={[
               { required: true, message: 'Vui lòng nhập mã sinh viên' },
+              { pattern: /^\d+$/, message: 'Mã sinh viên chỉ được chứa số' },
               { min: 3, message: 'Mã sinh viên phải có ít nhất 3 ký tự' }
             ]}
           >
@@ -171,6 +180,10 @@ const Register = () => {
           <Form.Item
             name="faculty"
             label="Khoa"
+            rules={[
+              { required: true, message: 'Vui lòng nhập tên khoa' },
+              { min: 2, message: 'Tên khoa phải có ít nhất 2 ký tự' }
+            ]}
           >
             <Input placeholder="Nhập tên khoa" />
           </Form.Item>
@@ -178,6 +191,10 @@ const Register = () => {
           <Form.Item
             name="class"
             label="Lớp"
+            rules={[
+              { required: true, message: 'Vui lòng nhập tên lớp' },
+              { min: 2, message: 'Tên lớp phải có ít nhất 2 ký tự' }
+            ]}
           >
             <Input placeholder="Nhập tên lớp" />
           </Form.Item>

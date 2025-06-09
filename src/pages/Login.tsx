@@ -22,10 +22,22 @@ interface User {
 }
 
 interface LoginResponse {
-  status: string;
+  status: 'success' | 'error';
   message: string;
   data: {
-    user: User;
+    user: {
+      _id: string;
+      fullName: string;
+      email: string;
+      role: 'admin' | 'student';
+      studentId?: string;
+      phone?: string;
+      faculty?: string;
+      class?: string;
+      isActive: boolean;
+      createdAt: string;
+      updatedAt: string;
+    };
     token: string;
   };
 }
@@ -43,41 +55,41 @@ const Login = () => {
       const response = await axiosClient.post<LoginResponse>('/api/auth/login', values);
       console.log('Response từ server:', response.data);
       
-      if (response.data.status !== 'success') {
+      if (response.data.status === 'success' && response.data.data?.user && response.data.data?.token) {
+        const { user, token } = response.data.data;
+        
+        // Log thông tin user để debug
+        console.log('User info:', {
+          id: user._id,
+          fullName: user.fullName,
+          email: user.email,
+          role: user.role
+        });
+
+        // Kiểm tra role
+        if (!user.role || (user.role !== 'admin' && user.role !== 'student')) {
+          throw new Error('Invalid user role');
+        }
+        
+        // Lưu thông tin user và token
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+        
+        // Cập nhật Redux store
+        dispatch(setCredentials({ user, token }));
+        
+        // Show success message
+        messageApi.success('Đăng nhập thành công!');
+        
+        // Chuyển hướng dựa trên role
+        const redirectPath = user.role === 'admin' ? '/admin' : '/student/dashboard';
+        console.log('Chuyển hướng đến:', redirectPath, 'với role:', user.role);
+        
+        // Chuyển hướng ngay lập tức
+        navigate(redirectPath, { replace: true });
+      } else {
         throw new Error(response.data.message || 'Đăng nhập thất bại');
       }
-
-      const { user, token } = response.data.data;
-      
-      // Log thông tin user để debug
-      console.log('User info:', {
-        id: user._id,
-        fullName: user.fullName,
-        email: user.email,
-        role: user.role
-      });
-
-      // Kiểm tra role
-      if (!user.role || (user.role !== 'admin' && user.role !== 'student')) {
-        throw new Error('Invalid user role');
-      }
-      
-      // Lưu thông tin user và token
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
-      
-      // Cập nhật Redux store
-      dispatch(setCredentials({ user, token }));
-      
-      // Show success message
-      messageApi.success('Đăng nhập thành công!');
-      
-      // Chuyển hướng dựa trên role
-      const redirectPath = user.role === 'admin' ? '/admin' : '/student/dashboard';
-      console.log('Chuyển hướng đến:', redirectPath, 'với role:', user.role);
-      
-      // Chuyển hướng ngay lập tức
-      navigate(redirectPath, { replace: true });
       
     } catch (error) {
       console.error('Login error:', error);

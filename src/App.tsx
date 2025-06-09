@@ -15,6 +15,9 @@ import EquipmentList from './pages/student/EquipmentList';
 import BorrowHistory from './pages/student/BorrowHistory';
 import { useSelector } from 'react-redux';
 import { selectUserRole } from './store/slices/authSlice';
+import UserManagement from './pages/admin/UserManagement';
+import CreateUser from './pages/admin/CreateUser';
+import Statistics from './pages/admin/Statistics';
 
 const { defaultAlgorithm } = theme;
 
@@ -78,9 +81,11 @@ function App() {
               }
             >
               <Route index element={<AdminDashboard />} />
+              <Route path="users" element={<UserManagement />} />
+              <Route path="users/create" element={<CreateUser />} />
               <Route path="equipment" element={<EquipmentManagement />} />
               <Route path="requests" element={<BorrowRequests />} />
-              <Route path="users" element={<div>User Management</div>} />
+              <Route path="statistics" element={<Statistics />} />
               <Route path="settings" element={<div>Settings</div>} />
             </Route>
 
