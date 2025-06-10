@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Input, Select, Button, Modal, Form, DatePicker, message, Spin, InputNumber } from 'antd';
+import { Card, Input, Select, Button, Modal, Form, DatePicker, TimePicker, message, Spin, InputNumber } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import type { RangePickerProps } from 'antd/es/date-picker';
 import dayjs from 'dayjs';
 import axiosClient from '../../api/axiosClient';
+import { useMaintenanceStatus } from '../../hooks/useMaintenanceStatus';
+import MaintenanceAlert from '../../components/MaintenanceAlert';
 
 const { Search } = Input;
 const { RangePicker } = DatePicker;
@@ -33,6 +35,7 @@ const EquipmentList: React.FC = () => {
   const [equipment, setEquipment] = useState<Equipment[]>([]);
   const [loading, setLoading] = useState(true);
   const [form] = Form.useForm();
+  const { maintenanceStatus } = useMaintenanceStatus();
 
   const categories = [
     { value: 'all', label: 'Tất cả' },
@@ -75,9 +78,23 @@ const EquipmentList: React.FC = () => {
 
   const handleSubmitBorrowRequest = async (values: any) => {
     try {
+      // Kiểm tra chế độ bảo trì trước khi gửi request
+      if (maintenanceStatus.maintenanceMode) {
+        message.warning(maintenanceStatus.maintenanceMessage || 'Hệ thống đang bảo trì, không thể gửi yêu cầu mượn.');
+        return;
+      }
+
       if (!selectedEquipment) return;
 
       const [borrowDate, expectedReturnDate] = values.dates;
+      const returnTime = values.returnTime;
+      
+      // Kết hợp ngày trả và giờ trả
+      const returnDateTime = expectedReturnDate.clone()
+        .hour(returnTime.hour())
+        .minute(returnTime.minute())
+        .second(0)
+        .millisecond(0);
       
       const requestData = {
         equipments: [{
@@ -85,7 +102,7 @@ const EquipmentList: React.FC = () => {
           quantity: values.quantity
         }],
         borrowDate: borrowDate.format('YYYY-MM-DD'),
-        expectedReturnDate: expectedReturnDate.format('YYYY-MM-DD'),
+        expectedReturnDate: returnDateTime.toISOString(),
         purpose: values.purpose
       };
 
@@ -108,7 +125,14 @@ const EquipmentList: React.FC = () => {
 
     } catch (error: any) {
       console.error('Error submitting borrow request:', error);
-      // Kiểm tra nếu có response message
+      
+      // Kiểm tra nếu là lỗi maintenance từ server
+      if (error.response?.status === 503 && error.response?.data?.maintenance) {
+        message.warning(error.response.data.message);
+        return;
+      }
+      
+      // Kiểm tra nếu có response message khác
       if (error.response?.data?.message) {
         message.error(error.response.data.message);
       } else {
@@ -163,6 +187,11 @@ const EquipmentList: React.FC = () => {
 
   return (
     <div className="space-y-4">
+      {/* Thông báo bảo trì */}
+      {maintenanceStatus.maintenanceMode && (
+        <MaintenanceAlert message={maintenanceStatus.maintenanceMessage} />
+      )}
+
       <div className="flex gap-4 mb-6">
         <Search
           placeholder="Tìm kiếm theo tên, mã hoặc mô tả..."
@@ -189,9 +218,13 @@ const EquipmentList: React.FC = () => {
               <Button 
                 type="primary" 
                 onClick={() => handleBorrowRequest(item)}
-                disabled={item.availableQuantity === 0 || item.condition === 'damaged'}
+                disabled={
+                  item.availableQuantity === 0 || 
+                  item.condition === 'damaged' || 
+                  maintenanceStatus.maintenanceMode
+                }
               >
-                Yêu cầu mượn
+                {maintenanceStatus.maintenanceMode ? 'Hệ thống bảo trì' : 'Yêu cầu mượn'}
               </Button>
             ]}
           >
@@ -246,13 +279,35 @@ const EquipmentList: React.FC = () => {
         >
           <Form.Item
             name="dates"
-            label="Thời gian mượn"
+            label="Thời gian mượn (ngày)"
             rules={[{ required: true, message: 'Vui lòng chọn thời gian mượn!' }]}
           >
             <RangePicker
               disabledDate={disabledDate}
               className="w-full"
               format="DD/MM/YYYY"
+            />
+          </Form.Item>
+
+          <Form.Item
+            name="returnTime"
+            label="Giờ trả dự kiến"
+            rules={[{ required: true, message: 'Vui lòng chọn giờ trả!' }]}
+            extra="Chọn giờ trả trong khung thời gian hành chính (8:00 - 17:00)"
+          >
+            <TimePicker
+              className="w-full"
+              format="HH:mm"
+              minuteStep={15}
+              disabledHours={() => {
+                // Chỉ cho phép từ 8:00 đến 17:00
+                const hours = [];
+                for (let i = 0; i < 8; i++) hours.push(i);
+                for (let i = 18; i < 24; i++) hours.push(i);
+                return hours;
+              }}
+              placeholder="Chọn giờ trả"
+              defaultValue={dayjs().hour(17).minute(0)} // Mặc định 17:00
             />
           </Form.Item>
 

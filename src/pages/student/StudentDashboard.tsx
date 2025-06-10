@@ -1,25 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Row, Col, List, Tag, Typography, Statistic, Button, Spin, message, Badge } from 'antd';
+import { Card, Row, Col, List, Tag, Typography, Statistic, Button, Spin, Badge, notification } from 'antd';
 import { 
   ClockCircleOutlined, 
   CheckCircleOutlined, 
   ExclamationCircleOutlined,
   HistoryOutlined,
   RightOutlined,
-  InfoCircleOutlined
+  InfoCircleOutlined,
+  UserOutlined,
+  AppstoreOutlined
 } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { selectCurrentUser, selectIsAuthenticated } from '../../store/slices/authSlice';
-import axios from 'axios';
+import axiosClient from '../../api/axiosClient';
 import dayjs from 'dayjs';
 import './StudentDashboard.css';
+import { useMaintenanceStatus } from '../../hooks/useMaintenanceStatus';
+import MaintenanceAlert from '../../components/MaintenanceAlert';
 
 const { Title, Text } = Typography;
 
 interface Notification {
   _id: string;
-  type: 'request_submitted' | 'request_approved' | 'request_rejected' | 'return_reminder' | 'system';
+  type: 'request_submitted' | 'request_approved' | 'request_rejected' | 'return_reminder' | 'system' | 'maintenance';
   title: string;
   message: string;
   read: boolean;
@@ -32,6 +36,7 @@ interface UpcomingReturn {
   equipmentName: string;
   returnDate: string;
   isOverdue: boolean;
+  hoursUntilDue?: number;
 }
 
 interface BorrowingSummary {
@@ -45,6 +50,7 @@ const StudentDashboard: React.FC = () => {
   const currentUser = useSelector(selectCurrentUser);
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const navigate = useNavigate();
+  const { maintenanceStatus } = useMaintenanceStatus();
   
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [upcomingReturns, setUpcomingReturns] = useState<UpcomingReturn[]>([]);
@@ -65,26 +71,31 @@ const StudentDashboard: React.FC = () => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        const [notificationsRes, returnsRes, summaryRes] = await Promise.all([
-          axios.get('/api/notifications'),
-          axios.get('/api/upcoming-returns'),
-          axios.get('/api/borrowing-summary')
-        ]);
-
+        
+        // Fetch notifications từ API thực
+        const notificationsRes = await axiosClient.get('/api/notifications');
         if (notificationsRes.data.success) {
-          setNotifications(notificationsRes.data.data);
+          setNotifications(notificationsRes.data.data || []);
         }
 
+        // Fetch upcoming returns từ API thực
+        const returnsRes = await axiosClient.get('/api/borrow-requests/upcoming');
         if (returnsRes.data.success) {
-          setUpcomingReturns(returnsRes.data.upcomingReturns);
+          setUpcomingReturns(returnsRes.data.upcomingReturns || []);
         }
 
+        // Fetch borrowing summary từ API thực
+        const summaryRes = await axiosClient.get('/api/borrow-requests/summary');
         if (summaryRes.data.success) {
           setBorrowingSummary(summaryRes.data.summary);
         }
+
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
-        message.error('Có lỗi xảy ra khi tải dữ liệu');
+        notification.error({
+          message: 'Lỗi tải dữ liệu',
+          description: 'Có lỗi xảy ra khi tải dữ liệu dashboard'
+        });
       } finally {
         setLoading(false);
       }
@@ -99,21 +110,87 @@ const StudentDashboard: React.FC = () => {
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
+      case 'request_submitted':
+        return <InfoCircleOutlined className="text-blue-500" />;
       case 'request_approved':
         return <CheckCircleOutlined className="text-green-500" />;
       case 'request_rejected':
         return <ExclamationCircleOutlined className="text-red-500" />;
       case 'return_reminder':
         return <ClockCircleOutlined className="text-yellow-500" />;
+      case 'maintenance':
+        return <ExclamationCircleOutlined className="text-orange-500" />;
+      case 'system':
+        return <CheckCircleOutlined className="text-green-600" />;
       default:
         return <InfoCircleOutlined className="text-blue-500" />;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return 'warning';
+      case 'approved':
+        return 'success';
+      case 'rejected':
+        return 'error';
+      case 'available':
+        return 'success';
+      case 'in_use':
+        return 'processing';
+      case 'maintenance':
+        return 'error';
+      case 'warning':
+        return 'warning';
+      case 'notice':
+        return 'orange';
+      default:
+        return 'default';
+    }
+  };
+
+  const getStatusText = (isOverdue: boolean) => {
+    return isOverdue ? 'Quá hạn' : 'Sắp đến hạn';
+  };
+
+  const getTimeRemaining = (returnDate: string) => {
+    const now = dayjs();
+    const target = dayjs(returnDate);
+    const diffInMinutes = target.diff(now, 'minute');
+    
+    if (diffInMinutes <= 0) {
+      const overdueDays = Math.abs(now.diff(target, 'day'));
+      const overdueHours = Math.abs(now.diff(target, 'hour')) % 24;
+      
+      if (overdueDays > 0) {
+        return `Quá hạn ${overdueDays} ngày ${overdueHours > 0 ? `${overdueHours} giờ` : ''}`;
+      } else if (overdueHours > 0) {
+        return `Quá hạn ${overdueHours} giờ`;
+      } else {
+        return 'Quá hạn';
+      }
+    }
+    
+    const days = Math.floor(diffInMinutes / (24 * 60));
+    const hours = Math.floor((diffInMinutes % (24 * 60)) / 60);
+    const minutes = diffInMinutes % 60;
+    
+    if (days > 0) {
+      return `Còn ${days} ngày ${hours > 0 ? `${hours} giờ` : ''}`;
+    } else if (hours > 0) {
+      return `Còn ${hours} giờ ${minutes > 0 ? `${minutes} phút` : ''}`;
+    } else if (minutes > 0) {
+      return `Còn ${minutes} phút`;
+    } else {
+      return 'Sắp hết hạn';
     }
   };
 
   if (!isAuthenticated || !currentUser) {
     return (
       <div className="flex justify-center items-center h-[calc(100vh-64px)]">
-        <Spin size="large" tip="Đang tải..." />
+        <Spin size="large" />
       </div>
     );
   }
@@ -121,7 +198,7 @@ const StudentDashboard: React.FC = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-[calc(100vh-64px)]">
-        <Spin size="large" tip="Đang tải dữ liệu..." />
+        <Spin size="large" />
       </div>
     );
   }
@@ -129,18 +206,71 @@ const StudentDashboard: React.FC = () => {
   console.log('Rendering dashboard content');
   return (
     <div className="p-6">
-      <Title level={2}>Xin chào, {currentUser.fullName}!</Title>
-      
+      {/* Thông báo bảo trì */}
+      {maintenanceStatus.maintenanceMode && (
+        <MaintenanceAlert message={maintenanceStatus.maintenanceMessage} />
+      )}
+
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <Title level={4} style={{ margin: 0 }}>Xin chào, {currentUser.fullName}!</Title>
+          <Text type="secondary">Tổng quan tình trạng mượn trả thiết bị</Text>
+        </div>
+      </div>
+
+      <Row gutter={[16, 16]}>
+        <Col xs={24} sm={12} lg={6}>
+          <Card hoverable loading={loading}>
+            <Statistic
+              title="Đang chờ duyệt"
+              value={borrowingSummary.pending}
+              valueStyle={{ color: '#faad14' }}
+              prefix={<ClockCircleOutlined />}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card hoverable loading={loading}>
+            <Statistic
+              title="Đang mượn"
+              value={borrowingSummary.active}
+              valueStyle={{ color: '#1890ff' }}
+              prefix={<CheckCircleOutlined />}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card hoverable loading={loading}>
+            <Statistic
+              title="Quá hạn"
+              value={borrowingSummary.overdue}
+              valueStyle={{ color: '#ff4d4f' }}
+              prefix={<ExclamationCircleOutlined />}
+            />
+          </Card>
+        </Col>
+        <Col xs={24} sm={12} lg={6}>
+          <Card hoverable loading={loading}>
+            <Statistic
+              title="Tổng số lần mượn"
+              value={borrowingSummary.total}
+              valueStyle={{ color: '#52c41a' }}
+              prefix={<HistoryOutlined />}
+            />
+          </Card>
+        </Col>
+      </Row>
+
       <Row gutter={[16, 16]} className="mt-6">
         <Col xs={24} lg={12}>
-          <Card 
+          <Card
             title={<Title level={5} style={{ margin: 0 }}>Thông báo mới</Title>}
             extra={<Link to="/student/notifications">Xem tất cả</Link>}
-            className="dashboard-card h-full"
+            loading={loading}
           >
             <List
               itemLayout="horizontal"
-              dataSource={notifications}
+              dataSource={notifications.slice(0, 5)}
               renderItem={(item) => (
                 <List.Item 
                   className={`cursor-pointer hover:bg-gray-50 transition-colors rounded p-2 ${!item.read ? 'bg-blue-50' : ''}`}
@@ -166,74 +296,54 @@ const StudentDashboard: React.FC = () => {
                   />
                 </List.Item>
               )}
+              locale={{
+                emptyText: 'Không có thông báo mới'
+              }}
             />
           </Card>
         </Col>
-        
-        <Col xs={24} lg={12}>
-          <Card 
-            title={<Title level={5} style={{ margin: 0 }}>Tổng quan mượn trả</Title>}
-            className="dashboard-card"
-          >
-            <Row gutter={[16, 16]}>
-              <Col span={12}>
-                <Statistic
-                  title="Đang chờ duyệt"
-                  value={borrowingSummary.pending}
-                  prefix={<ClockCircleOutlined />}
-                />
-              </Col>
-              <Col span={12}>
-                <Statistic
-                  title="Đang mượn"
-                  value={borrowingSummary.active}
-                  prefix={<CheckCircleOutlined />}
-                />
-              </Col>
-              <Col span={12}>
-                <Statistic
-                  title="Quá hạn"
-                  value={borrowingSummary.overdue}
-                  prefix={<ExclamationCircleOutlined />}
-                  className="text-red-500"
-                />
-              </Col>
-              <Col span={12}>
-                <Statistic
-                  title="Tổng số lần mượn"
-                  value={borrowingSummary.total}
-                  prefix={<HistoryOutlined />}
-                />
-              </Col>
-            </Row>
-          </Card>
-        </Col>
 
-        <Col xs={24}>
-          <Card 
+        <Col xs={24} lg={12}>
+          <Card
             title={<Title level={5} style={{ margin: 0 }}>Sắp đến hạn trả</Title>}
-            className="dashboard-card"
+            extra={<Link to="/student/my-requests">Xem tất cả</Link>}
+            loading={loading}
           >
             <List
-              dataSource={upcomingReturns}
+              itemLayout="horizontal"
+              dataSource={upcomingReturns.slice(0, 5)}
               renderItem={(item) => (
-                <List.Item>
+                <List.Item
+                  extra={
+                    <Tag color={getStatusColor(item.isOverdue ? 'rejected' : 'warning')}>
+                      {getStatusText(item.isOverdue)}
+                    </Tag>
+                  }
+                >
                   <List.Item.Meta
                     avatar={
                       item.isOverdue ? 
-                        <ExclamationCircleOutlined className="text-red-500 text-2xl" /> :
-                        <ClockCircleOutlined className="text-yellow-500 text-2xl" />
+                        <ExclamationCircleOutlined style={{ fontSize: '24px', color: '#ff4d4f' }} /> :
+                        <ClockCircleOutlined style={{ fontSize: '24px', color: '#faad14' }} />
                     }
-                    title={item.equipmentName}
-                    description={`Hạn trả: ${dayjs(item.returnDate).format('DD/MM/YYYY')}`}
+                    title={<Text strong>{item.equipmentName}</Text>}
+                    description={
+                      <div>
+                        <Text>Hạn trả: {dayjs(item.returnDate).format('DD/MM/YYYY HH:mm')}</Text>
+                        <br />
+                        <Text type="secondary" style={{ 
+                          color: item.isOverdue ? '#ff4d4f' : dayjs(item.returnDate).diff(dayjs(), 'hour') <= 24 ? '#faad14' : '#666'
+                        }}>
+                          {getTimeRemaining(item.returnDate)}
+                        </Text>
+                      </div>
+                    }
                   />
-                  <Link to="/student/my-requests">
-                    <Button type="link" icon={<RightOutlined />}>
-                      Chi tiết
-                    </Button>
-                  </Link>
                 </List.Item>
               )}
+              locale={{
+                emptyText: 'Không có thiết bị nào sắp đến hạn trả'
+              }}
             />
           </Card>
         </Col>

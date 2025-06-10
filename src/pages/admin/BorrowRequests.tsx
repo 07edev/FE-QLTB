@@ -83,8 +83,8 @@ const BorrowRequests: React.FC = () => {
             quantity: eq.quantity || 0
           })),
           borrowDate: request.borrowDate ? dayjs(request.borrowDate).format('DD/MM/YYYY') : 'N/A',
-          expectedReturnDate: request.expectedReturnDate ? dayjs(request.expectedReturnDate).format('DD/MM/YYYY') : 'N/A',
-          actualReturnDate: request.actualReturnDate ? dayjs(request.actualReturnDate).format('DD/MM/YYYY') : null
+          expectedReturnDate: request.expectedReturnDate ? dayjs(request.expectedReturnDate).format('DD/MM/YYYY HH:mm') : 'N/A',
+          actualReturnDate: request.actualReturnDate ? dayjs(request.actualReturnDate).format('DD/MM/YYYY HH:mm') : null
         };
       });
 
@@ -183,14 +183,16 @@ const BorrowRequests: React.FC = () => {
       key: 'borrowDate',
     },
     {
-      title: 'Ngày trả dự kiến',
+      title: 'Ngày giờ trả dự kiến',
       dataIndex: 'expectedReturnDate',
       key: 'expectedReturnDate',
+      width: 140,
     },
     {
-      title: 'Ngày trả thực tế',
+      title: 'Ngày giờ trả thực tế',
       dataIndex: 'actualReturnDate',
       key: 'actualReturnDate',
+      width: 140,
       render: (date: string) => date || '-'
     },
     {
@@ -360,7 +362,7 @@ const BorrowRequests: React.FC = () => {
               </div>
 
               <div>
-                <p className="font-semibold">Ngày trả:</p>
+                <p className="font-semibold">Ngày giờ trả dự kiến:</p>
                 <p>{selectedRequest.expectedReturnDate}</p>
               </div>
 

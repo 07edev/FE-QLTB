@@ -18,6 +18,7 @@ import { selectUserRole } from './store/slices/authSlice';
 import UserManagement from './pages/admin/UserManagement';
 import CreateUser from './pages/admin/CreateUser';
 import Statistics from './pages/admin/Statistics';
+import Settings from './pages/admin/Settings';
 
 const { defaultAlgorithm } = theme;
 
@@ -86,7 +87,7 @@ function App() {
               <Route path="equipment" element={<EquipmentManagement />} />
               <Route path="requests" element={<BorrowRequests />} />
               <Route path="statistics" element={<Statistics />} />
-              <Route path="settings" element={<div>Settings</div>} />
+              <Route path="settings" element={<Settings />} />
             </Route>
 
             {/* Student routes */}

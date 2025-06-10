@@ -120,10 +120,11 @@ const BorrowHistory: React.FC = () => {
       sorter: (a, b) => dayjs(a.borrowDate).unix() - dayjs(b.borrowDate).unix(),
     },
     {
-      title: 'Ngày trả dự kiến',
+      title: 'Ngày giờ trả dự kiến',
       dataIndex: 'expectedReturnDate',
       key: 'expectedReturnDate',
-      render: (date) => dayjs(date).format('DD/MM/YYYY'),
+      width: 140,
+      render: (date) => dayjs(date).format('DD/MM/YYYY HH:mm'),
     },
     {
       title: 'Trạng thái',
@@ -235,9 +236,9 @@ const BorrowHistory: React.FC = () => {
             <div>
               <p className="font-semibold">Thời gian:</p>
               <p>Ngày mượn: {dayjs(selectedRequest.borrowDate).format('DD/MM/YYYY')}</p>
-              <p>Ngày trả dự kiến: {dayjs(selectedRequest.expectedReturnDate).format('DD/MM/YYYY')}</p>
+              <p>Ngày giờ trả dự kiến: {dayjs(selectedRequest.expectedReturnDate).format('DD/MM/YYYY HH:mm')}</p>
               {selectedRequest.actualReturnDate && (
-                <p>Ngày trả thực tế: {dayjs(selectedRequest.actualReturnDate).format('DD/MM/YYYY')}</p>
+                <p>Ngày giờ trả thực tế: {dayjs(selectedRequest.actualReturnDate).format('DD/MM/YYYY HH:mm')}</p>
               )}
             </div>
 
@@ -274,4 +275,5 @@ const BorrowHistory: React.FC = () => {
 };
 
 export default BorrowHistory; 
+ 
  
