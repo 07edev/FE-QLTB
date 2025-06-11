@@ -1,43 +1,135 @@
 .ant-layout-content {
-  margin: 24px;
-  padding: 24px;
-  background: #fff;
-  min-height: 280px;
+  margin: 32px;
+  padding: 32px;
+  background: linear-gradient(135deg, #f6f8ff 0%, #e9efff 100%);
+  min-height: 320px;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
 }
 
 .dashboard-card {
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
-  transition: all 0.3s;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  background: linear-gradient(145deg, #ffffff 0%, #f8faff 100%);
+  padding: 32px 24px;
+  border: 1px solid rgba(228, 233, 242, 0.7);
 }
 
 .dashboard-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.12);
+  border-color: rgba(99, 102, 241, 0.3);
 }
 
 .ant-card {
-  border-radius: 8px;
+  border-radius: 12px;
+  border: none;
+  overflow: hidden;
 }
 
 .ant-list-item {
-  padding: 12px !important;
-  border-radius: 6px;
-  margin: 4px 0;
+  padding: 16px !important;
+  border-radius: 12px;
+  margin: 12px 0;
+  background: linear-gradient(145deg, #f8faff 0%, #ffffff 100%);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(228, 233, 242, 0.7);
 }
 
 .ant-list-item:hover {
-  background-color: rgba(0, 0, 0, 0.02);
+  background: linear-gradient(145deg, #f0f7ff 0%, #f8faff 100%);
+  transform: translateX(5px);
+  border-color: rgba(99, 102, 241, 0.3);
 }
 
 .ant-statistic-title {
-  margin-bottom: 8px !important;
+  margin-bottom: 12px !important;
+  font-size: 16px;
+  color: #4f46e5;
+  font-weight: 500;
 }
 
 .ant-statistic-content {
-  font-size: 24px !important;
+  font-size: 32px !important;
+  font-weight: 600;
+  background: linear-gradient(45deg, #4f46e5, #6366f1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .ant-layout {
-  background: #f0f2f5;
+  background: linear-gradient(180deg, #f0f4ff 0%, #e5eaff 100%);
+}
+
+/* Buttons */
+.ant-btn {
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.ant-btn-primary {
+  background: linear-gradient(45deg, #4f46e5, #6366f1);
+  border: none;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.ant-btn-primary:hover {
+  background: linear-gradient(45deg, #6366f1, #4f46e5);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+}
+
+/* Tags */
+.ant-tag {
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-weight: 500;
+}
+
+/* Badges */
+.ant-badge-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+/* Table styles */
+.ant-table {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+
+.ant-table-thead > tr > th {
+  background: linear-gradient(145deg, #f8faff 0%, #ffffff 100%) !important;
+  font-weight: 600;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background: linear-gradient(145deg, #f0f7ff 0%, #f8faff 100%) !important;
+}
+
+/* Form styles */
+.ant-form-item-label > label {
+  font-weight: 500;
+  color: #4f46e5;
+}
+
+.ant-input, .ant-select-selector {
+  border-radius: 8px !important;
+  border: 1px solid rgba(228, 233, 242, 0.7) !important;
+  transition: all 0.3s ease !important;
+}
+
+.ant-input:hover, .ant-select-selector:hover {
+  border-color: rgba(99, 102, 241, 0.3) !important;
+}
+
+.ant-input:focus, .ant-select-selector:focus {
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2) !important;
+  border-color: #6366f1 !important;
 } 
  
  

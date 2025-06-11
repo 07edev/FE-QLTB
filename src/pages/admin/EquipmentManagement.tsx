@@ -58,23 +58,17 @@ const EquipmentManagement: React.FC = () => {
   // Fetch equipment data
   const fetchEquipment = async () => {
     try {
-      console.log('Starting to fetch equipment...');
       setLoading(true);
-      
       const response = await axiosClient.get('/api/equipment');
-      console.log('Raw API response:', response);
-      console.log('Response data:', response.data);
-      
       if (!response.data || response.data.status !== 'success') {
         throw new Error(response.data?.message || 'Failed to fetch equipment');
       }
-      
       // Kiểm tra và xử lý dữ liệu trả về
       const responseData = response.data?.data;
       console.log('Response data structure:', responseData);
 
       // Lấy mảng equipments từ response
-      let equipmentData = responseData?.equipments || [];
+      let equipmentData = response.data?.data?.equipments || [];
       console.log('Equipment array:', equipmentData);
       
       // Validate dữ liệu
@@ -108,7 +102,6 @@ const EquipmentManagement: React.FC = () => {
 
       console.log('Final formatted data:', formattedData);
       setEquipment(formattedData);
-      
     } catch (error) {
       console.error('Error fetching equipment:', error);
       message.error('Không thể tải danh sách thiết bị');
@@ -206,7 +199,6 @@ const EquipmentManagement: React.FC = () => {
       // Fetch lại dữ liệu
       console.log('Fetching updated equipment list...');
       await fetchEquipment();
-
     } catch (error: any) {
       console.error('Error submitting form:', error);
       console.error('Error details:', error.response?.data);
@@ -246,7 +238,6 @@ const EquipmentManagement: React.FC = () => {
       cancelText: 'Hủy',
       onOk: async () => {
         try {
-          console.log('Sending delete request for ID:', id);
           const response = await axiosClient.delete(`/api/equipment/${id}`);
           
           console.log('Delete response:', response.data);
@@ -263,7 +254,6 @@ const EquipmentManagement: React.FC = () => {
           // Fetch lại danh sách
           console.log('Fetching updated list after deletion');
           await fetchEquipment();
-          
         } catch (error: any) {
           console.error('Error deleting equipment:', error);
           message.error(error.response?.data?.message || error.message || 'Có lỗi xảy ra khi xóa thiết bị');

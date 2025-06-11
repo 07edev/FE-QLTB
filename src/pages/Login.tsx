@@ -150,15 +150,51 @@ const Login = () => {
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-background"></div>
-      
-      <div className="auth-container">
+    <div
+      className="auth-page"
+      style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #6EE7B7 0%, #3B82F6 100%)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <div
+        className="auth-container"
+        style={{
+          width: 400,
+          maxWidth: '95vw',
+          background: 'rgba(255,255,255,0.95)',
+          borderRadius: 24,
+          boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.18)',
+          padding: 32,
+        }}
+      >
         <div className="auth-card">
-          <div className="auth-header">
-            <img src={Logo} alt="Logo" className="auth-logo" />
-            <Title level={3} className="auth-title">Hi there! Welcome back</Title>
-            <Text className="auth-subtitle">
+          <div className="auth-header" style={{ textAlign: 'center', marginBottom: 24 }}>
+            <img src={Logo} alt="Logo" className="auth-logo" style={{ width: 64, marginBottom: 8 }} />
+            <Title
+              level={3}
+              className="auth-title"
+              style={{
+                background: 'linear-gradient(90deg, #3B82F6 0%, #06b6d4 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                fontWeight: 700,
+                marginBottom: 0,
+              }}
+            >
+              Hi there! Welcome back
+            </Title>
+            <Text
+              className="auth-subtitle"
+              style={{
+                color: '#3B82F6',
+                fontWeight: 500,
+                fontSize: 16,
+              }}
+            >
               Log in to QLTB with your email address
             </Text>
           </div>
@@ -183,8 +219,14 @@ const Login = () => {
                 { type: 'email', message: 'Invalid email format!' }
               ]}
             >
-              <Input 
+              <Input
                 placeholder="Enter your email"
+                size="large"
+                style={{
+                  borderRadius: 8,
+                  borderColor: '#3B82F6',
+                  background: '#F0F9FF',
+                }}
               />
             </Form.Item>
 
@@ -195,6 +237,12 @@ const Login = () => {
             >
               <Input.Password
                 placeholder="Enter your password"
+                size="large"
+                style={{
+                  borderRadius: 8,
+                  borderColor: '#3B82F6',
+                  background: '#F0F9FF',
+                }}
               />
             </Form.Item>
 
@@ -204,42 +252,56 @@ const Login = () => {
                 htmlType="submit"
                 block
                 name="submit"
+                size="large"
+                style={{
+                  background: 'linear-gradient(90deg, #3B82F6 0%, #06b6d4 100%)',
+                  border: 'none',
+                  borderRadius: 8,
+                  fontWeight: 600,
+                  fontSize: 16,
+                  boxShadow: '0 2px 8px 0 rgba(59,130,246,0.15)',
+                }}
               >
                 Log in with password
               </Button>
             </Form.Item>
 
-            <Divider className="!my-4">Login with</Divider>
+            <Divider className="!my-4" style={{ color: '#3B82F6' }}>Login with</Divider>
 
             <Button
               block
               className="mb-6"
+              style={{
+                background: '#fff',
+                color: '#3B82F6',
+                border: '1px solid #3B82F6',
+                borderRadius: 8,
+                fontWeight: 500,
+              }}
             >
               S-Link
             </Button>
 
-            <div className="auth-links">
+            <div className="auth-links" style={{ textAlign: 'center', color: '#64748b', fontSize: 14 }}>
               By continuing, I agree to QLTB's{' '}
-              <Link to="/privacy">Privacy Policy</Link>
+              <Link to="/privacy" style={{ color: '#3B82F6' }}>Privacy Policy</Link>
               {' '}and{' '}
-              <Link to="/terms">Terms of Use</Link>
+              <Link to="/terms" style={{ color: '#3B82F6' }}>Terms of Use</Link>
             </div>
           </Form>
 
           <Divider className="!my-4" />
-          
-          <div className="auth-links">
+          <div className="auth-links" style={{ textAlign: 'center', color: '#64748b', fontSize: 14 }}>
             Don't have an account?{' '}
-            <Link to="/register">Sign up for free</Link>
+            <Link to="/register" style={{ color: '#3B82F6', fontWeight: 600 }}>Sign up for free</Link>
           </div>
         </div>
-
-        <div className="auth-footer">
-          qltb.com · <Link to="/support">contact support</Link>
+        <div className="auth-footer" style={{ textAlign: 'center', marginTop: 24, color: '#64748b' }}>
+          qltb.com · <Link to="/support" style={{ color: '#3B82F6' }}>contact support</Link>
         </div>
       </div>
     </div>
   );
 };
 
-export default Login; 
+export default Login;

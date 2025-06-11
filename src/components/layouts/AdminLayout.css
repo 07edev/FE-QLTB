@@ -1,71 +1,153 @@
 .admin-layout {
   min-height: 100vh;
+  background: linear-gradient(180deg, #f6f8ff 0%, #e9efff 100%);
 }
 
 .layout-sider {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
   z-index: 10;
+  border-radius: 0 24px 24px 0;
+  background: linear-gradient(180deg, #ffffff 0%, #f8faff 100%);
+  border-right: 1px solid rgba(228, 233, 242, 0.7);
 }
 
 .logo-container {
-  padding: 16px;
+  padding: 24px 16px;
   text-align: center;
-  border-bottom: 1px solid #f0f0f0;
+  background: linear-gradient(45deg, #4f46e5, #6366f1);
+  margin: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.logo-container img {
+  height: 40px;
+  filter: brightness(0) invert(1);
 }
 
 .layout-menu {
   border-right: none;
-  padding: 12px 0;
+  padding: 20px;
+}
+
+.layout-menu .ant-menu-item {
+  border-radius: 12px;
+  margin: 8px 0;
+  transition: all 0.3s ease;
+}
+
+.layout-menu .ant-menu-item:hover {
+  background: linear-gradient(145deg, #f0f7ff 0%, #f8faff 100%);
+  transform: translateX(5px);
+}
+
+.layout-menu .ant-menu-item-selected {
+  background: linear-gradient(45deg, #4f46e5, #6366f1) !important;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.layout-menu .ant-menu-item .anticon {
+  font-size: 18px;
 }
 
 .layout-header {
-  background: white;
-  padding: 0 24px;
+  background: linear-gradient(90deg, #ffffff 0%, #f8faff 100%);
+  padding: 0 32px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
   z-index: 1;
+  border-radius: 0 0 24px 24px;
+  border-bottom: 1px solid rgba(228, 233, 242, 0.7);
+  height: 72px;
 }
 
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 24px;
 }
 
 .notification-badge {
   cursor: pointer;
+  transition: all 0.3s ease;
+  background: #f8faff;
+  padding: 8px;
+  border-radius: 50%;
+  position: relative;
 }
 
 .notification-badge:hover {
-  opacity: 0.8;
+  transform: translateY(-2px);
+  background: #f0f7ff;
+}
+
+.notification-badge .ant-badge-count {
+  background: linear-gradient(45deg, #4f46e5, #6366f1);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
 .user-info {
   display: flex;
   align-items: center;
   cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 4px;
-  transition: all 0.3s;
+  padding: 8px 16px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  background: linear-gradient(145deg, #f8faff 0%, #ffffff 100%);
+  border: 1px solid rgba(228, 233, 242, 0.7);
+  gap: 12px;
 }
 
 .user-info:hover {
-  background: rgba(0, 0, 0, 0.04);
+  background: linear-gradient(145deg, #f0f7ff 0%, #f8faff 100%);
+  transform: translateY(-2px);
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.user-info .user-name {
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.user-info .user-role {
+  font-size: 12px;
+  color: #6b7280;
 }
 
 .user-avatar {
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
+  border: 2px solid #6366f1;
+  border-radius: 50%;
+  padding: 2px;
+  background: #ffffff;
 }
 
 .layout-content {
-  margin: 24px;
-  padding: 24px;
-  background: white;
-  border-radius: 8px;
-  min-height: 280px;
+  margin: 32px;
+  padding: 32px;
+  background: #ffffff;
+  border-radius: 24px;
+  min-height: 320px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(228, 233, 242, 0.7);
+}
+
+/* Breadcrumb styles */
+.ant-breadcrumb {
+  margin-bottom: 24px;
+}
+
+.ant-breadcrumb-link {
+  color: #6b7280;
+  transition: all 0.3s ease;
+}
+
+.ant-breadcrumb-link:hover {
+  color: #4f46e5;
 }
 
 /* Responsive adjustments */
@@ -75,15 +157,32 @@
     height: 100vh;
     left: 0;
     top: 0;
+    border-radius: 0 16px 16px 0;
   }
   
   .layout-header {
     padding: 0 16px;
+    height: 64px;
+    border-radius: 0 0 16px 16px;
   }
   
   .layout-content {
     margin: 16px;
     padding: 16px;
+    border-radius: 16px;
+  }
+  
+  .logo-container {
+    margin: 8px;
+    padding: 16px 12px;
+  }
+  
+  .header-actions {
+    gap: 16px;
+  }
+  
+  .user-info {
+    padding: 6px 12px;
   }
 } 
  

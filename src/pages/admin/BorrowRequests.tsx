@@ -90,7 +90,6 @@ const BorrowRequests: React.FC = () => {
 
       console.log('Formatted Requests:', formattedRequests);
       setRequests(formattedRequests);
-
     } catch (error: any) {
       console.error('Error fetching requests:', error);
       console.error('Error details:', {
@@ -130,7 +129,6 @@ const BorrowRequests: React.FC = () => {
       }
 
       const response = await axiosClient.put(endpoint, data);
-
       if (response.data?.status === 'success') {
         message.success('Cập nhật trạng thái thành công');
         await fetchRequests(); // Refresh data

@@ -67,29 +67,21 @@ const StudentDashboard: React.FC = () => {
       navigate('/login');
       return;
     }
-
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        
-        // Fetch notifications từ API thực
         const notificationsRes = await axiosClient.get('/api/notifications');
         if (notificationsRes.data.success) {
           setNotifications(notificationsRes.data.data || []);
         }
-
-        // Fetch upcoming returns từ API thực
         const returnsRes = await axiosClient.get('/api/borrow-requests/upcoming');
         if (returnsRes.data.success) {
           setUpcomingReturns(returnsRes.data.upcomingReturns || []);
         }
-
-        // Fetch borrowing summary từ API thực
         const summaryRes = await axiosClient.get('/api/borrow-requests/summary');
         if (summaryRes.data.success) {
           setBorrowingSummary(summaryRes.data.summary);
         }
-
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
         notification.error({
@@ -100,7 +92,6 @@ const StudentDashboard: React.FC = () => {
         setLoading(false);
       }
     };
-
     fetchDashboardData();
     
     // Refresh data every minute
@@ -352,4 +343,4 @@ const StudentDashboard: React.FC = () => {
   );
 };
 
-export default StudentDashboard; 
+export default StudentDashboard;

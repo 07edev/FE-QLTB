@@ -52,7 +52,6 @@ const EquipmentList: React.FC = () => {
     try {
       setLoading(true);
       const response = await axiosClient.get('/api/equipment');
-      
       if (response.data?.status === 'success') {
         const equipmentData = response.data.data?.equipments || [];
         setEquipment(equipmentData);
@@ -122,7 +121,6 @@ const EquipmentList: React.FC = () => {
       setBorrowModalVisible(false);
       form.resetFields();
       fetchEquipment(); // Refresh equipment list
-
     } catch (error: any) {
       console.error('Error submitting borrow request:', error);
       
@@ -368,6 +366,5 @@ const EquipmentList: React.FC = () => {
   );
 };
 
-export default EquipmentList; 
- 
- 
+export default EquipmentList;
+

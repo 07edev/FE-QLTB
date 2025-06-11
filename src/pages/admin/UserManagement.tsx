@@ -72,7 +72,6 @@ const UserManagement: React.FC = () => {
 
   const handleEditSubmit = async (values: any) => {
     if (!selectedUser) return;
-
     try {
       const response = await axiosClient.put(`/api/users/${selectedUser._id}`, values);
       if (response.data?.success) {
@@ -245,4 +244,4 @@ const UserManagement: React.FC = () => {
   );
 };
 
-export default UserManagement; 
+export default UserManagement;
