@@ -18,19 +18,20 @@ const MaintenanceAlert: React.FC<MaintenanceAlertProps> = ({
   return (
     <Alert
       message={
-        <div className="flex items-center">
-          {showIcon && <ToolOutlined className="mr-2" />}
+        <div className="flex items-center" style={{ cursor: 'default' }}>
+          {showIcon && <ToolOutlined className="mr-2" style={{ cursor: 'default' }} />}
           <Text strong>Hệ thống đang bảo trì</Text>
         </div>
       }
       description={message}
       type="warning"
       showIcon={showIcon}
-      icon={showIcon ? <ToolOutlined /> : undefined}
+      icon={showIcon ? <ToolOutlined style={{ cursor: 'default' }} /> : undefined}
       className={className}
       banner
+      style={{ cursor: 'default' }}
     />
   );
 };
 
-export default MaintenanceAlert; 
+export default MaintenanceAlert;

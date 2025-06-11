@@ -366,6 +366,7 @@ const EquipmentManagement: React.FC = () => {
               type="primary"
               icon={<EditOutlined />}
               onClick={() => handleEdit(record)}
+              style={{ cursor: 'pointer' }}
             />
           </Tooltip>
           <Tooltip title="Xóa">
@@ -380,6 +381,7 @@ const EquipmentManagement: React.FC = () => {
                 }
                 handleDelete(record._id);
               }}
+              style={{ cursor: 'pointer' }}
             />
           </Tooltip>
         </Space>
@@ -406,6 +408,7 @@ const EquipmentManagement: React.FC = () => {
               form.resetFields();
               setModalVisible(true);
             }}
+            style={{ cursor: 'pointer' }}
           >
             Thêm thiết bị
           </Button>
@@ -584,8 +587,7 @@ const EquipmentManagement: React.FC = () => {
   );
 };
 
-export default EquipmentManagement; 
- 
- 
- 
- 
+export default EquipmentManagement;
+
+
+

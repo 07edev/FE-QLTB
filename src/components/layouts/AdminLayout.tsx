@@ -86,8 +86,8 @@ const AdminLayout: React.FC = () => {
 
   return (
     <Layout style={{ minHeight: '100vh' }} className="admin-layout">
-      <Sider width={250} theme="light" className="layout-sider">
-        <div className="logo-container">
+      <Sider width={250} theme="light" className="layout-sider" style={{ cursor: 'pointer' }}>
+        <div className="logo-container" style={{ cursor: 'pointer' }}>
           <h1 className="text-xl font-bold">Quản lý thiết bị</h1>
           <div className="text-sm text-gray-500">Admin Panel</div>
         </div>
@@ -96,20 +96,21 @@ const AdminLayout: React.FC = () => {
           selectedKeys={[location.pathname]}
           items={menuItems}
           className="layout-menu"
+          style={{ cursor: 'pointer' }}
         />
       </Sider>
       <Layout>
-        <Header className="layout-header">
+        <Header className="layout-header" style={{ cursor: 'default' }}>
           <div className="text-lg font-semibold">
             {menuItems.find(item => item.key === location.pathname)?.label}
           </div>
-          <div className="header-actions">
-            <Badge count={3} className="notification-badge">
-              <BellOutlined className="text-xl" />
+          <div className="header-actions" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <Badge count={3} className="notification-badge" style={{ cursor: 'pointer' }}>
+              <BellOutlined className="text-xl" style={{ cursor: 'pointer' }} />
             </Badge>
             <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
-              <div className="user-info">
-                <Avatar icon={<UserOutlined />} className="user-avatar" />
+              <div className="user-info" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                <Avatar icon={<UserOutlined />} className="user-avatar" style={{ cursor: 'pointer' }} />
                 <span className="ml-2 hidden md:inline">{currentUser.fullName}</span>
               </div>
             </Dropdown>
@@ -123,7 +124,6 @@ const AdminLayout: React.FC = () => {
   );
 };
 
-export default AdminLayout; 
- 
- 
- 
+export default AdminLayout;
+
+

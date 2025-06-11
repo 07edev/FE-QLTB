@@ -239,6 +239,7 @@ const BorrowRequests: React.FC = () => {
               type="text"
               icon={<EyeOutlined />}
               onClick={() => showDetailModal(record)}
+              style={{ cursor: 'pointer' }}
             />
           </Tooltip>
           
@@ -258,6 +259,7 @@ const BorrowRequests: React.FC = () => {
                       }
                     });
                   }}
+                  style={{ cursor: 'pointer' }}
                 />
               </Tooltip>
               
@@ -266,6 +268,7 @@ const BorrowRequests: React.FC = () => {
                   type="text"
                   icon={<CloseOutlined style={{ color: '#ff4d4f' }} />}
                   onClick={() => showRejectModal(record)}
+                  style={{ cursor: 'pointer' }}
                 />
               </Tooltip>
             </>
@@ -285,6 +288,7 @@ const BorrowRequests: React.FC = () => {
                     }
                   });
                 }}
+                style={{ cursor: 'pointer' }}
               >
                 Cho mượn
               </Button>
@@ -305,6 +309,7 @@ const BorrowRequests: React.FC = () => {
                     }
                   });
                 }}
+                style={{ cursor: 'pointer' }}
               >
                 Xác nhận trả
               </Button>
@@ -424,5 +429,4 @@ const BorrowRequests: React.FC = () => {
   );
 };
 
-export default BorrowRequests; 
- 
+export default BorrowRequests;
